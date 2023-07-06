@@ -8,6 +8,8 @@ django = "*"
 djangorestframework = "*"
 django-rest-auth = "*"
 drf-yasg = "*"
+django-cors-headers = "*"
+django-extensions = "*"
 
 [dev-packages]
 
