@@ -1,7 +1,7 @@
 xnetwork.pem
 xnetworkdev.tar
 .env
-xnetwork/static
+static
 # Elastic Beanstalk Files
 .elasticbeanstalk/*
 !.elasticbeanstalk/*.cfg.yml
