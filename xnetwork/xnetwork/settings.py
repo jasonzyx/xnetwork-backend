@@ -47,6 +47,7 @@ SSL_PRIVATE_KEY = './key.pem'
 SITE_ID = 1
 
 ALLOWED_HOSTS = ['*',
+                 '127.0.0.1:3000'
                  'eb-env-xnetwork.eba-wmkzstpw.us-east-1.elasticbeanstalk.com',
 ]
 
