@@ -13,6 +13,7 @@ packaging==23.1
 psycopg2-binary==2.9.6
 pycparser==2.21
 pyOpenSSL==23.2.0
+python-dotenv==1.0.0
 pytz==2023.3
 PyYAML==6.0
 six==1.16.0
