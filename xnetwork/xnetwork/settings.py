@@ -129,27 +129,27 @@ WSGI_APPLICATION = 'xnetwork.wsgi.application'
 #     }
 # }
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql',
-#         'NAME': os.environ.get('RDS_DB_NAME'),
-#         'USER': os.environ.get('RDS_USERNAME'),
-#         'PASSWORD': os.environ.get('RDS_PASSWORD'),
-#         'HOST': os.environ.get('RDS_HOSTNAME'),
-#         'PORT': os.environ.get('RDS_PORT'),
-#     }
-# }
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'xnetworkprod',
-        'USER': 'postgres',
-        'PASSWORD': 'postgres',
-        'HOST': 'database-1.czfcv2yqvyit.us-east-1.rds.amazonaws.com',
-        'PORT': '5432',
+        'NAME': os.environ.get('RDS_DB_NAME'),
+        'USER': os.environ.get('RDS_USERNAME'),
+        'PASSWORD': os.environ.get('RDS_PASSWORD'),
+        'HOST': os.environ.get('RDS_HOSTNAME'),
+        'PORT': os.environ.get('RDS_PORT'),
     }
 }
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': 'xnetworkprod',
+#         'USER': 'postgres',
+#         'PASSWORD': 'postgres',
+#         'HOST': 'database-1.czfcv2yqvyit.us-east-1.rds.amazonaws.com',
+#         'PORT': '5432',
+#     }
+# }
 
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
