@@ -38,7 +38,7 @@ SECRET_KEY = 'django-insecure-$t=5!3mvep(ar)_#&z$znkge-c5gkhn9(*q&tya_jy!(u-dz4m
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-SESSION_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = False
 CSRF_COOKIE_SECURE = False
 SECURE_HSTS_SECONDS = 31536000  # 1 year
 SSL_CERTIFICATE = './cert.pem'
@@ -47,8 +47,8 @@ SSL_PRIVATE_KEY = './key.pem'
 SITE_ID = 1
 
 ALLOWED_HOSTS = ['*',
-                 '127.0.0.1:3000'
-                 'eb-env-xnetwork.eba-wmkzstpw.us-east-1.elasticbeanstalk.com',
+                 '127.0.0.1:3000',
+                 'xnetwork-dev.us-east-1.elasticbeanstalk.com',
 ]
 
 
@@ -129,14 +129,25 @@ WSGI_APPLICATION = 'xnetwork.wsgi.application'
 #     }
 # }
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': os.environ.get('RDS_DB_NAME'),
+#         'USER': os.environ.get('RDS_USERNAME'),
+#         'PASSWORD': os.environ.get('RDS_PASSWORD'),
+#         'HOST': os.environ.get('RDS_HOSTNAME'),
+#         'PORT': os.environ.get('RDS_PORT'),
+#     }
+# }
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.environ.get('RDS_DB_NAME'),
-        'USER': os.environ.get('RDS_USERNAME'),
-        'PASSWORD': os.environ.get('RDS_PASSWORD'),
-        'HOST': os.environ.get('RDS_HOSTNAME'),
-        'PORT': os.environ.get('RDS_PORT'),
+        'NAME': 'xnetworkprod',
+        'USER': 'postgres',
+        'PASSWORD': 'postgres',
+        'HOST': 'database-1.czfcv2yqvyit.us-east-1.rds.amazonaws.com',
+        'PORT': '5432',
     }
 }
 
@@ -173,10 +184,13 @@ USE_L10N = True
 USE_TZ = True
 
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/3.2/howto/static-files/
-STATIC_ROOT = '/static/'
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
 STATIC_URL = '/static/'
+
+# This is the location where all your static files will be collected to
+# It needs to be a location in your project directory
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
