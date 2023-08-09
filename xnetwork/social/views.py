@@ -1,19 +1,47 @@
 # views.py
-from rest_framework import viewsets
+from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import User
+from django.http import JsonResponse
+from rest_framework import status
+from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from rest_framework import status
-from .models import Post, Comment, Like, FriendRequest, Friend
-from .serializers import PostSerializer, CommentSerializer, LikeSerializer, FriendRequestSerializer, FriendSerializer
+
+from .models import Post, Comment, Like, FriendRequest, Friend, Profile
+from .serializers import PostSerializer, CommentSerializer, LikeSerializer, FriendRequestSerializer, FriendSerializer, \
+    ProfileSerializer
 from .serializers import UserSerializer
-from django.contrib.auth import authenticate, login
-from django.http import JsonResponse
+from django.contrib.auth.hashers import check_password
 
 
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
+
+    @action(detail=True, methods=['post'], url_path='update-profile')
+    def update_profile(self, request, pk=None):
+        user = self.get_object()
+
+        profile, created = Profile.objects.get_or_create(user=user)
+        serializer = ProfileSerializer(profile, data=request.data, partial=True)
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    @action(detail=True, methods=['post'], url_path='change-password')
+    def change_password(self, request, pk=None):
+        user = self.get_object()
+        old_password = request.data.get('old_password')
+        new_password = request.data.get('new_password')
+
+        if not check_password(old_password, user.password):
+            return Response({'old_password': ['Wrong password.']}, status=status.HTTP_400_BAD_REQUEST)
+
+        user.set_password(new_password)
+        user.save()
+        return Response({'message': 'Password updated successfully'})
 
     @action(methods=['post'], detail=False)
     def login(self, request):

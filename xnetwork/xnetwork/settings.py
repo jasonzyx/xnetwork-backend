@@ -121,13 +121,19 @@ WSGI_APPLICATION = 'xnetwork.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.environ.get('RDS_DB_NAME'),
-        'USER': os.environ.get('RDS_USERNAME'),
-        'PASSWORD': os.environ.get('RDS_PASSWORD'),
-        'HOST': os.environ.get('RDS_HOSTNAME'),
-        'PORT': os.environ.get('RDS_PORT'),
+        'NAME': 'xnetworkprod', # os.environ.get('RDS_DB_NAME'),
+        'USER': 'postgres', # os.environ.get('RDS_USERNAME'),
+        'PASSWORD': 'postgres', # os.environ.get('RDS_PASSWORD'),
+        'HOST': 'database-1.czfcv2yqvyit.us-east-1.rds.amazonaws.com',  # os.environ.get('RDS_HOSTNAME'),
+        'PORT': '5432', # os.environ.get('RDS_PORT'),
     }
 }
+
+# RDS_DB_NAME=xnetworkprod
+# RDS_USERNAME=postgres
+# RDS_PASSWORD=postgres
+# RDS_HOSTNAME=database-1.czfcv2yqvyit.us-east-1.rds.amazonaws.com
+# RDS_PORT=5432
 
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
@@ -146,6 +152,9 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
 
 
 # Internationalization
