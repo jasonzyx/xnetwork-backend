@@ -21,14 +21,31 @@ class UserViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=['post'], url_path='update-profile')
     def update_profile(self, request, pk=None):
         user = self.get_object()
+        user_serializer = UserSerializer(user, data=request.data, partial=True)
 
-        profile, created = Profile.objects.get_or_create(user=user)
-        serializer = ProfileSerializer(profile, data=request.data, partial=True)
+        if user_serializer.is_valid():
+            user_serializer.save()
 
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            profile_data = request.data.get('profile')
+            if profile_data:
+                profile, created = Profile.objects.get_or_create(user=user)
+                profile_serializer = ProfileSerializer(profile, data=profile_data, partial=True)
+
+                if profile_serializer.is_valid():
+                    profile_serializer.save()
+                    return Response({
+                        'user': user_serializer.data,
+                        'profile': profile_serializer.data
+                    })
+                else:
+                    return Response(profile_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            else:
+                return Response(user_serializer.data)
+        else:
+            print("serializer error: ")
+            print(user_serializer.errors)
+            # Return a response if user_serializer is not valid
+            return Response(user_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     @action(detail=True, methods=['post'], url_path='change-password')
     def change_password(self, request, pk=None):

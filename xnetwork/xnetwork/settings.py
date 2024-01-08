@@ -118,16 +118,29 @@ WSGI_APPLICATION = 'xnetwork.wsgi.application'
 #     }
 # }
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': 'xnetworkprod', # os.environ.get('RDS_DB_NAME'),
+#         'USER': 'postgres', # os.environ.get('RDS_USERNAME'),
+#         'PASSWORD': 'postgres', # os.environ.get('RDS_PASSWORD'),
+#         'HOST': 'database-1.czfcv2yqvyit.us-east-1.rds.amazonaws.com',  # os.environ.get('RDS_HOSTNAME'),
+#         'PORT': '5432', # os.environ.get('RDS_PORT'),
+#     }
+# }
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'xnetworkprod', # os.environ.get('RDS_DB_NAME'),
+        'NAME': 'xnetworklocal', # os.environ.get('RDS_DB_NAME'),
         'USER': 'postgres', # os.environ.get('RDS_USERNAME'),
         'PASSWORD': 'postgres', # os.environ.get('RDS_PASSWORD'),
-        'HOST': 'database-1.czfcv2yqvyit.us-east-1.rds.amazonaws.com',  # os.environ.get('RDS_HOSTNAME'),
+        'HOST': '127.0.0.1',  # os.environ.get('RDS_HOSTNAME'),
         'PORT': '5432', # os.environ.get('RDS_PORT'),
     }
 }
+
+
 
 # RDS_DB_NAME=xnetworkprod
 # RDS_USERNAME=postgres

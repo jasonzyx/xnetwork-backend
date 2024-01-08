@@ -12,11 +12,30 @@ class ProfileSerializer(serializers.ModelSerializer):
 
 
 class UserSerializer(serializers.ModelSerializer):
+    profile = ProfileSerializer(required=False)
+
     password = serializers.CharField(write_only=True)
 
     class Meta:
         model = User
-        fields = ('username', 'password', 'email', 'first_name', 'last_name')
+        fields = ('username', 'password', 'email', 'first_name', 'last_name', 'profile')
+
+    def update(self, instance, validated_data):
+        profile_data = validated_data.pop('profile', None)
+        profile = instance.profile
+
+        # Update the user instance
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+        instance.save()
+
+        # Update the profile instance
+        if profile_data:
+            for attr, value in profile_data.items():
+                setattr(profile, attr, value)
+            profile.save()
+
+        return instance
 
     def create(self, validated_data):
         user = User(
