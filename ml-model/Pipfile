@@ -1,0 +1,22 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+transformers = "*"
+numpy = "*"
+pandas = "*"
+jupyter = "*"
+jupyterlab = "*"
+ipykernel = "*"
+torch = "*"
+psutil = "*"
+elasticsearch = "<8.0.0"
+scikit-learn = "*"
+feast = {extras = ["redis"], version = "*"}
+
+[dev-packages]
+
+[requires]
+python_version = "3.9"
