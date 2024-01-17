@@ -1,6 +1,9 @@
 xnetwork.pem
 xnetworkdev.tar
 .env
+../ml-model/model-artifacts/*
+ml-model/model-artifacts/*
+#ml-model/model-artifacts/faiss_index.idx
 # Elastic Beanstalk Files
 .elasticbeanstalk/*
 !.elasticbeanstalk/*.cfg.yml

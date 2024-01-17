@@ -13,6 +13,13 @@ django-extensions = "*"
 psycopg2-binary = "*"
 python-dotenv = "*"
 pillow = "*"
+transformers = "*"
+faiss-cpu = "*"
+numpy = "*"
+torch = "*"
+celery = "*"
+elasticsearch = "<8.0.0"
+feast = {extras = ["redis"], version = "*"}
 
 [dev-packages]
 
