@@ -37,6 +37,7 @@ movies_view = FeatureView(
     ttl=timedelta(days=1),
     schema=[
         Field(name="title", dtype=String),
+        Field(name="image", dtype=String),
     ],
     source=movies_source
 )

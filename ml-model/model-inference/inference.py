@@ -75,11 +75,19 @@ def predict_score(model, userId, query, movieId, path):
 
 
 def batch_fetch_movie_features(movie_ids, store):
+    # Fetch both 'title' and 'image_url' features
     movie_features = store.get_online_features(
-        features=["movies_view:title"],
+        features=["movies_view:title", "movies_view:image"],  # Include 'image_url' feature
         entity_rows=[{"movieId": movie_id} for movie_id in movie_ids]
     ).to_dict()
-    return {movie_id: movie_features['title'][i] for i, movie_id in enumerate(movie_ids)}
+
+    # Return a dictionary with movie IDs as keys and both features as values
+    return {
+        movie_id: {
+            'title': movie_features['title'][i],
+            'image': movie_features['image'][i]
+        } for i, movie_id in enumerate(movie_ids)
+    }
 
 
 def get_feature_store(feature_store_path):
@@ -89,18 +97,18 @@ def get_feature_store(feature_store_path):
 def rank_movies(model, user_id, query, movie_ids, relevance_weight, store):
     # Batch fetch movie features
     movie_titles = batch_fetch_movie_features(movie_ids, store)
-
+    user_features = store.get_online_features(
+        features=["user_stats_view:avg_rating", "user_stats_view:rating_stddev"],
+        entity_rows=[{"userId": user_id}]
+    ).to_dict()
     # Predict scores for each movie
     movie_scores = []
     for movie_id in movie_ids:
-        movie_title = movie_titles[movie_id]
+        movie_title = movie_titles[movie_id]['title']
+        image = movie_titles[movie_id]['image']
         query_emb = get_bert_embedding(query).detach().numpy().flatten()
         movie_emb = get_bert_embedding(movie_title).detach().numpy().flatten()
         query_movie_dot_product = np.dot(query_emb, movie_emb)
-        user_features = store.get_online_features(
-            features=["user_stats_view:avg_rating", "user_stats_view:rating_stddev"],
-            entity_rows=[{"userId": user_id}]
-        ).to_dict()
         feature_vector = combine_features(query_emb, user_features, movie_emb)
         feature_tensor = torch.tensor(np.array([feature_vector]), dtype=torch.float32)
 
@@ -108,7 +116,9 @@ def rank_movies(model, user_id, query, movie_ids, relevance_weight, store):
         with torch.no_grad():
             output = model(feature_tensor)
             predicted_score = output.item()
-        movie_scores.append((movie_id, predicted_score + relevance_weight * query_movie_dot_product, movie_title))
+
+        if image is not None:
+            movie_scores.append((movie_id, predicted_score + relevance_weight * query_movie_dot_product, movie_title, image))
 
     # Sort movies by score in descending order
     sorted_movies = sorted(movie_scores, key=lambda x: x[1], reverse=True)
