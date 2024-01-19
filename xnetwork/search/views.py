@@ -68,8 +68,8 @@ class SearchAPIViewSet(viewsets.GenericViewSet):
 
         sorted_movies_with_scores = rank_movies(loaded_model, user_id, query, movie_ids, relevance_weight, feature_store)
         print("DEBUG to print results")
-        for movie_id, score, title, image_url in sorted_movies_with_scores:
-            print(f"Movie ID: {movie_id}, Predicted Score: {score}, Title: {title}, Url: {image_url}")
+        for movie_id, score, title, image_url, genres in sorted_movies_with_scores:
+            print(f"Movie ID: {movie_id}, Predicted Score: {score}, Title: {title}, Url: {image_url}, Genres: {genres}")
 
         return Response(sorted_movies_with_scores, status=200)
 

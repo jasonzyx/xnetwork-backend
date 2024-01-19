@@ -38,6 +38,7 @@ movies_view = FeatureView(
     schema=[
         Field(name="title", dtype=String),
         Field(name="image", dtype=String),
+        Field(name="genres", dtype=String)
     ],
     source=movies_source
 )

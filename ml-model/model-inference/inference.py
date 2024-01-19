@@ -77,7 +77,7 @@ def predict_score(model, userId, query, movieId, path):
 def batch_fetch_movie_features(movie_ids, store):
     # Fetch both 'title' and 'image_url' features
     movie_features = store.get_online_features(
-        features=["movies_view:title", "movies_view:image"],  # Include 'image_url' feature
+        features=["movies_view:title", "movies_view:image", "movies_view:genres"],  # Include 'image_url' feature
         entity_rows=[{"movieId": movie_id} for movie_id in movie_ids]
     ).to_dict()
 
@@ -85,7 +85,8 @@ def batch_fetch_movie_features(movie_ids, store):
     return {
         movie_id: {
             'title': movie_features['title'][i],
-            'image': movie_features['image'][i]
+            'image': movie_features['image'][i],
+            'genres': movie_features['genres'][i]
         } for i, movie_id in enumerate(movie_ids)
     }
 
@@ -96,7 +97,7 @@ def get_feature_store(feature_store_path):
 
 def rank_movies(model, user_id, query, movie_ids, relevance_weight, store):
     # Batch fetch movie features
-    movie_titles = batch_fetch_movie_features(movie_ids, store)
+    movie_info = batch_fetch_movie_features(movie_ids, store)
     user_features = store.get_online_features(
         features=["user_stats_view:avg_rating", "user_stats_view:rating_stddev"],
         entity_rows=[{"userId": user_id}]
@@ -104,8 +105,9 @@ def rank_movies(model, user_id, query, movie_ids, relevance_weight, store):
     # Predict scores for each movie
     movie_scores = []
     for movie_id in movie_ids:
-        movie_title = movie_titles[movie_id]['title']
-        image = movie_titles[movie_id]['image']
+        movie_title = movie_info[movie_id]['title']
+        image = movie_info[movie_id]['image']
+        genres = movie_info[movie_id]['genres']
         query_emb = get_bert_embedding(query).detach().numpy().flatten()
         movie_emb = get_bert_embedding(movie_title).detach().numpy().flatten()
         query_movie_dot_product = np.dot(query_emb, movie_emb)
@@ -118,7 +120,8 @@ def rank_movies(model, user_id, query, movie_ids, relevance_weight, store):
             predicted_score = output.item()
 
         if image is not None:
-            movie_scores.append((movie_id, predicted_score + relevance_weight * query_movie_dot_product, movie_title, image))
+            movie_scores.append((movie_id, predicted_score + relevance_weight * query_movie_dot_product, movie_title,
+                                 image, genres))
 
     # Sort movies by score in descending order
     sorted_movies = sorted(movie_scores, key=lambda x: x[1], reverse=True)
