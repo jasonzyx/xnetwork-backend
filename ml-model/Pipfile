@@ -17,6 +17,7 @@ scikit-learn = "*"
 feast = {extras = ["redis"], version = "*"}
 
 [dev-packages]
+ipykernel = "*"
 
 [requires]
 python_version = "3.9"

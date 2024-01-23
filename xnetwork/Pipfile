@@ -20,6 +20,7 @@ torch = "*"
 celery = "*"
 elasticsearch = "<8.0.0"
 feast = {extras = ["redis"], version = "*"}
+openai = "==0.28"
 
 [dev-packages]
 
