@@ -10,7 +10,7 @@ from django.contrib.auth.models import User
 
 from .models import Query, ChatSession
 from .serializers import QueryTextSerializer, ChatSessionSerializer
-from .utils import extract_search_criteria, generate_query_text, can_generate_query
+from .utils import extract_search_criteria, can_generate_query
 import os
 from dotenv import load_dotenv
 
@@ -91,10 +91,11 @@ class ChatSessionViewSet(viewsets.GenericViewSet):
             chat_session.save()
 
             # Extract movie search criteria from the conversation
-            movie_search_info = extract_search_criteria(user_message, openai)
+            is_query, query_text = extract_search_criteria(user_message, openai)
 
-            if can_generate_query(movie_search_info):  # determine if the criteria are sufficient
-                query_text = generate_query_text(movie_search_info)
+            assistant_response['searching_for'] = None
+            assistant_response['ranked_results'] = None
+            if is_query and query_text is not None:  # determine if the criteria are sufficient
                 ranked_results = self.search_lean_tile_internal(request, query_text)
 
                 assistant_response['searching_for'] = query_text

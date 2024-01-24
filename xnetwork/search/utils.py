@@ -1,4 +1,5 @@
 import openai
+import json
 
 
 def extract_search_criteria(user_input, openai):
@@ -10,12 +11,38 @@ def extract_search_criteria(user_input, openai):
     :return: Dictionary with extracted information.
     """
     prompt = f"""
-             Extract movie search query text from the following user input: '{user_input}'，following the below requirement: 
-             - if the input is a genres, or the input is a movie title, do not process and output it as is except for 
-             correcting the typo if any
-             - if user input is an actor/actress name or something else, output relevant movie names only.
-             - please output English only and don't use languages other than English, 
-             - please only output movie names or genres，no other words or description
+             Extract movie search query text from the following user input: '{user_input}',
+             following the below requirement: 
+             - Please output in English only and do not use languages other than English， regardless of the input language
+             - Output in JSON format with 'query_text' and 'is_query', where 'is_query' indicates whether the user_input can 
+             be formulated into a movie search query, and 'query_text' is the text used for movie engine search and needs
+             to be in English, regardless of the input language.
+             - If the input is a genre or a movie title, for the 'query_text' field of the output, 
+             keep it as is except for correcting any typos.
+             - If user input is an actor/actress name or something else, output relevant movie names only.
+             - Please only output movie names or genres, no other words or descriptions.
+
+             Example 1:
+             user_input = "recommend a movie from Leonardo DiCaprio"
+             output = {{ "query_text": "titanic", "is_query": True }}
+             
+             Example 4:
+             user_input = "Leonardo DiCaprio"
+             output = {{ "query_text": None, "is_query": False }}
+             
+             Example 5:
+             user_input = "泰坦尼克号"
+             output = {{ "query_text": titanic, "is_query": True }}
+
+             Example 2:
+             user_input = "adventre"
+             output = {{ "query_text": "adventure", "is_query": True }}
+
+             Example 3:
+             user_input = "recommend a movie for a family of four for Saturday night"
+             output = {{ "query_text": None, "is_query": False }}
+             
+             
              """
 
     print(prompt)
@@ -29,32 +56,13 @@ def extract_search_criteria(user_input, openai):
     )
 
     extracted_info = response.get('choices', [])[0].get('message', {'content': ''})['content'].strip()
-    print("DEBUG: extracted_info")
-    print(extracted_info)
+    parsed_json = json.loads(extracted_info)
 
-    # Assuming the model returns a comma-separated list of key-value pairs
-    # criteria = {}
-    # for item in extracted_info.split(','):
-    #     key_value = item.split(':')
-    #     if len(key_value) == 2:
-    #         criteria[key_value[0].strip()] = key_value[1].strip()
+    # Accessing elements
+    query_text = parsed_json["query_text"]
+    is_query = parsed_json["is_query"]
 
-    return extracted_info
-
-
-def generate_query_text(movie_search_info):
-    """
-    Generates a search query based on the accumulated movie search criteria.
-
-    :param movie_search_info: Dictionary containing the search criteria.
-    :return: A query string.
-    """
-    return movie_search_info
-    # query_parts = []
-    # for key, value in movie_search_info.items():
-    #     # query_parts.append(f"{key}:{value}")
-    #     query_parts.append(value)
-    # return " ".join(query_parts)
+    return is_query, query_text
 
 
 def can_generate_query(movie_search_info):
